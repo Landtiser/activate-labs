@@ -33,7 +33,7 @@ Build an AI agent that customizes your professional bio for specific sales oppor
 
 **Why this lab first?** Your first agent should solve a real annoyance, not aim to revolutionize an industry.
 
-[Launch Lab →](./labs/bio-customizer/bio-customizer.html) | [Read the story](https://landtiser.com/bio-customizer-agent)
+[Launch Lab →](https://landtiser.com/lab/bio-customizer.html) | [Read the story](https://landtiser.com/bio-customizer-agent)
 
 ---
 
