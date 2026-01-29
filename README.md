@@ -37,6 +37,20 @@ Build an AI agent that customizes your professional bio for specific sales oppor
 
 ---
 
+### Lab #2: Master Your Inbox with Copilot Prioritize
+
+**Duration:** 45 minutes  
+**Difficulty:** Beginner  
+**Platform:** Microsoft Outlook (Copilot license required)
+
+Configure Outlook's AI prioritization to actually work for you. You'll set up custom rules for what counts as high priority (and more usefully, low priority), configure the mobile experience, and learn how to refine your instructions as Copilot learns your patterns.
+
+**Why this lab?** Lab #1 was about building an agent. This one is about using AI that's already in your tools. Both skills matter—and they're completely different muscles.
+
+[Launch Lab →](https://landtiser.com/lab/copilot-prioritize.html) | [Read the story](https://landtiser.com/copilot-prioritize-lab)
+
+---
+
 ## How to Use These Labs
 
 ### As a Learner
