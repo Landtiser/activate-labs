@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Your Inbox with Copilot Prioritize | Chris Landtiser</title>
+    <style>
+        /*
+        ╔═════════════════════════════════════════════════════════════════╗
+        ║  WHITE-LABEL INSTRUCTIONS                                       ║
+        ║                                                                 ║
+        ║  To customize this lab for your organization:                   ║
+        ║                                                                 ║
+        ║  1. Find/Replace "Chris Landtiser" with your name/brand         ║
+        ║  2. Find/Replace "landtiser.com" with your website              ║
+        ║  3. Optionally update colors in the :root CSS variables         ║
+        ║                                                                 ║
+        ║  Look for <!-- YOUR BRAND --> comments for key locations        ║
+        ╚═════════════════════════════════════════════════════════════════╝
+        */
+
+        :root {
+            /* =============================================
+               DESIGN TOKENS
+               Modify colors here to match your brand
+               ============================================= */
+            
+            /* Color Palette */
+            --voyager-blue: #003366;
+            --voyager-blue-light: #004080;
+            --voyager-teal: #008080;
+            --voyager-gold: #B8860B;
+            --voyager-silver: #C0C0C0;
+            --voyager-purple: #663399;
+            --neutral-dark: #333333;
+            --neutral-medium: #666666;
+            --neutral-light: #F5F5F5;
+            --white: #FFFFFF;
+            
+            /* Functional Tokens */
+            --text-primary: var(--neutral-dark);
+            --text-secondary: var(--neutral-medium);
+            --bg-page: var(--neutral-light);
+            --bg-card: var(--white);
+            --accent-primary: var(--voyager-blue);
+            --accent-secondary: var(--voyager-teal);
+            --highlight: var(--voyager-gold);
+            
+            /* Spacing Scale */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            --space-3xl: 4rem;
+            
+            /* Typography */
+            --font-family: 'Segoe UI', system-ui, sans-serif;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.75rem;
+            --font-size-4xl: 2.25rem;
+            
+            /* Effects */
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-page);
+        }
+
+        /* ===================
+           HEADER COMPONENT
+           =================== */
+        .lab-header {
+            background: linear-gradient(135deg, var(--voyager-blue) 0%, var(--voyager-blue-light) 100%);
+            color: var(--white);
+            padding: var(--space-3xl) var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lab-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0,128,128,0.15) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: 100px;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            margin-bottom: var(--space-lg);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .lab-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            letter-spacing: -0.02em;
+        }
+
+        .lab-subtitle {
+            font-size: var(--font-size-lg);
+            opacity: 0.9;
+            max-width: 600px;
+            margin-bottom: var(--space-xl);
+        }
+
+        .lab-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-lg);
+            font-size: var(--font-size-sm);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            opacity: 0.85;
+        }
+
+        .meta-item svg {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+
+        /* ===================
+           PROGRESS TRACKER
+           =================== */
+        .progress-container {
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .progress-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-md) var(--space-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            background: none;
+            border: 1px solid var(--neutral-medium);
+            border-radius: var(--radius-sm);
+            padding: var(--space-xs) var(--space-md);
+            font-family: inherit;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .back-button:hover {
+            background: var(--neutral-light);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        .back-button svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .progress-label {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--neutral-light);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--voyager-blue), var(--voyager-teal));
+            border-radius: 100px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-steps {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--accent-primary);
+            white-space: nowrap;
+        }
+
+        /* ===================
+           MAIN CONTENT
+           =================== */
+        .lab-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-2xl) var(--space-xl);
+        }
+
+        /* ===================
+           STEP CARDS
+           =================== */
+        .step-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-xl);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-lg);
+            padding: var(--space-xl);
+            border-bottom: 1px solid var(--neutral-light);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--voyager-blue), var(--voyager-blue-light));
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,51,102,0.3);
+        }
+
+        .step-title-group {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .step-time {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .step-time svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .step-body {
+            padding: var(--space-xl);
+        }
+
+        .step-instruction {
+            font-size: var(--font-size-lg);
+            line-height: 1.7;
+            margin-bottom: var(--space-lg);
+        }
+
+        .step-instruction code {
+            background: var(--neutral-light);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--voyager-blue);
+        }
+
+        .step-instruction strong {
+            color: var(--voyager-blue);
+            font-weight: 600;
+        }
+
+        /* ===================
+           SCREENSHOT CONTAINER
+           =================== */
+        .screenshot-container {
+            background: var(--neutral-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin: var(--space-lg) 0;
+        }
+
+        .screenshot-container img {
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .screenshot-placeholder {
+            background: linear-gradient(135deg, #e8e8e8 0%, #f5f5f5 100%);
+            border: 2px dashed var(--voyager-silver);
+            border-radius: var(--radius-md);
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            gap: var(--space-md);
+        }
+
+        .screenshot-placeholder svg {
+            width: 48px;
+            height: 48px;
+            opacity: 0.5;
+        }
+
+        .screenshot-placeholder span {
+            font-size: var(--font-size-sm);
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .screenshot-caption {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: var(--space-md);
+            font-style: italic;
+        }
+
+        .screenshot-container.narrow {
+            text-align: center;
+        }
+
+        .screenshot-container.narrow img {
+            width: auto;
+            max-width: 100%;
+            max-height: 350px;
+        }
+
+        /* ===================
+           CALLOUT BOXES
+           =================== */
+        .callout {
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin: var(--space-lg) 0;
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .callout-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .callout-content {
+            flex: 1;
+        }
+
+        .callout-title {
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+            font-size: var(--font-size-base);
+        }
+
+        .callout-text {
+            font-size: var(--font-size-sm);
+            line-height: 1.6;
+        }
+
+        /* Tip - Teal */
+        .callout-tip {
+            background: linear-gradient(135deg, rgba(0,128,128,0.08), rgba(0,128,128,0.04));
+            border-left: 4px solid var(--voyager-teal);
+        }
+
+        .callout-tip .callout-icon {
+            color: var(--voyager-teal);
+        }
+
+        .callout-tip .callout-title {
+            color: var(--voyager-teal);
+        }
+
+        /* Note - Blue */
+        .callout-note {
+            background: linear-gradient(135deg, rgba(0,51,102,0.08), rgba(0,51,102,0.04));
+            border-left: 4px solid var(--voyager-blue);
+        }
+
+        .callout-note .callout-icon {
+            color: var(--voyager-blue);
+        }
+
+        .callout-note .callout-title {
+            color: var(--voyager-blue);
+        }
+
+        /* Checkpoint - Gold */
+        .callout-checkpoint {
+            background: linear-gradient(135deg, rgba(184,134,11,0.1), rgba(184,134,11,0.05));
+            border-left: 4px solid var(--voyager-gold);
+        }
+
+        .callout-checkpoint .callout-icon {
+            color: var(--voyager-gold);
+        }
+
+        .callout-checkpoint .callout-title {
+            color: #8B6914;
+        }
+
+        /* Warning - Purple (for advanced/complex topics) */
+        .callout-warning {
+            background: linear-gradient(135deg, rgba(102,51,153,0.08), rgba(102,51,153,0.04));
+            border-left: 4px solid var(--voyager-purple);
+        }
+
+        .callout-warning .callout-icon {
+            color: var(--voyager-purple);
+        }
+
+        .callout-warning .callout-title {
+            color: var(--voyager-purple);
+        }
+
+        /* ===================
+           TROUBLESHOOTING
+           =================== */
+        .troubleshooting {
+            margin: var(--space-lg) 0;
+        }
+
+        .troubleshooting-toggle {
+            background: var(--neutral-light);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: var(--space-md) var(--space-lg);
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            font-family: inherit;
+            font-size: var(--font-size-base);
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .troubleshooting-toggle:hover {
+            background: #e8e8e8;
+            color: var(--text-primary);
+        }
+
+        .troubleshooting-toggle svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .troubleshooting-toggle[aria-expanded="true"] svg {
+            transform: rotate(180deg);
+        }
+
+        .troubleshooting-content {
+            display: none;
+            padding: var(--space-lg);
+            background: var(--neutral-light);
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            margin-top: -8px;
+        }
+
+        .troubleshooting-content.open {
+            display: block;
+        }
+
+        .troubleshooting-content ul {
+            margin-left: var(--space-lg);
+        }
+
+        .troubleshooting-content li {
+            margin-bottom: var(--space-sm);
+            font-size: var(--font-size-sm);
+        }
+
+        /* ===================
+           INSTRUCTION EXAMPLES TABLE
+           =================== */
+        .instruction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--space-lg) 0;
+            font-size: var(--font-size-sm);
+        }
+
+        .instruction-table th,
+        .instruction-table td {
+            padding: var(--space-md);
+            text-align: left;
+            border-bottom: 1px solid var(--neutral-light);
+        }
+
+        .instruction-table th {
+            background: var(--neutral-light);
+            font-weight: 600;
+            color: var(--voyager-blue);
+        }
+
+        .instruction-table tr:hover {
+            background: rgba(0,128,128,0.04);
+        }
+
+        .instruction-table code {
+            background: var(--neutral-light);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--voyager-blue);
+            display: inline-block;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: var(--space-sm);
+        }
+
+        .role-badge.generic {
+            background: var(--neutral-light);
+            color: var(--neutral-medium);
+        }
+
+        .role-badge.sales {
+            background: rgba(0,128,128,0.15);
+            color: var(--voyager-teal);
+        }
+
+        .role-badge.pm {
+            background: rgba(184,134,11,0.15);
+            color: #8B6914;
+        }
+
+        .role-badge.exec {
+            background: rgba(102,51,153,0.15);
+            color: var(--voyager-purple);
+        }
+
+        /* ===================
+           COMPLETION SECTION
+           =================== */
+        .completion-section {
+            background: linear-gradient(135deg, var(--voyager-blue) 0%, var(--voyager-blue-light) 100%);
+            color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
+            text-align: center;
+            margin-top: var(--space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .completion-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(0,128,128,0.2) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .completion-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-lg);
+        }
+
+        .completion-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .completion-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+
+        .completion-text {
+            font-size: var(--font-size-lg);
+            opacity: 0.9;
+            max-width: 500px;
+            margin: 0 auto var(--space-xl);
+        }
+
+        .next-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: var(--space-md);
+        }
+
+        .next-step-link {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: var(--white);
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .next-step-link:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .next-step-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ===================
+           FOOTER
+           =================== */
+        .lab-footer {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .footer-brand svg {
+            width: 20px;
+            height: 20px;
+            color: var(--voyager-blue);
+        }
+
+        .footer-brand span {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .footer-link {
+            color: var(--voyager-teal);
+            text-decoration: none;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ===================
+           RESPONSIVE
+           =================== */
+        @media (max-width: 768px) {
+            .lab-header {
+                padding: var(--space-2xl) var(--space-lg);
+            }
+
+            .lab-title {
+                font-size: var(--font-size-2xl);
+            }
+
+            .lab-subtitle {
+                font-size: var(--font-size-base);
+            }
+
+            .lab-meta {
+                gap: var(--space-md);
+            }
+
+            .progress-inner {
+                padding: var(--space-sm) var(--space-lg);
+            }
+
+            .progress-label {
+                display: none;
+            }
+
+            .back-button span {
+                display: none;
+            }
+
+            .lab-content {
+                padding: var(--space-lg);
+            }
+
+            .step-header {
+                padding: var(--space-lg);
+            }
+
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: var(--font-size-lg);
+            }
+
+            .step-body {
+                padding: var(--space-lg);
+            }
+
+            .instruction-table {
+                font-size: 0.8rem;
+            }
+
+            .instruction-table th,
+            .instruction-table td {
+                padding: var(--space-sm);
+            }
+        }
+
+        /* ===================
+           PRINT STYLES
+           =================== */
+        @media print {
+            .progress-container {
+                display: none;
+            }
+
+            .step-card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .troubleshooting-content {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- =============================================
+         HEADER
+         ============================================= -->
+    <header class="lab-header">
+        <div class="header-content">
+            <!-- YOUR BRAND: Badge text -->
+            <div class="header-badge">
+                <!-- Compass icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                </svg>
+                Chris Landtiser
+            </div>
+            <h1 class="lab-title">Master Your Inbox with Copilot Prioritize</h1>
+            <p class="lab-subtitle">Use AI-powered prioritization to surface what matters, filter the noise, and reclaim your focus across desktop and mobile.</p>
+            <div class="lab-meta">
+                <div class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    ~45 minutes
+                </div>
+                <div class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Intermediate
+                </div>
+                <div class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                        <path d="M8 21h8"/>
+                        <path d="M12 17v4"/>
+                    </svg>
+                    Desktop + Mobile
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- =============================================
+         PROGRESS TRACKER WITH BACK BUTTON
+         ============================================= -->
+    <div class="progress-container">
+        <div class="progress-inner">
+            <!-- YOUR BRAND: Update back button URL -->
+            <a href="https://landtiser.com" class="back-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5"/>
+                    <path d="M12 19l-7-7 7-7"/>
+                </svg>
+                <span>Leave This Lab</span>
+            </a>
+            <span class="progress-label">Your progress</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-steps" id="progressSteps">0 of 8</span>
+        </div>
+    </div>
+
+    <!-- =============================================
+         MAIN CONTENT
+         ============================================= -->
+    <main class="lab-content">
+
+        <!-- =========================================
+             STEP 1: Access Copilot Prioritize
+             ========================================= -->
+        <article class="step-card" data-step="1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Access Copilot Prioritize</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~2 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    Open <strong>Outlook</strong> (new Outlook for Windows or Outlook on the web). In the top-right corner, locate the <strong>Copilot</strong> button. Click the small arrow next to it to expand the dropdown menu, then select <strong>Prioritize</strong>.
+                </p>
+
+                <div class="screenshot-container narrow">
+                    <img src="step-1.png" alt="Copilot dropdown menu showing Chat, Reply, Summarize, and Prioritize options">
+                    <p class="screenshot-caption">Select Prioritize from the Copilot dropdown menu</p>
+                </div>
+
+                <div class="callout callout-note">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <path d="M14 2v6h6"/>
+                        <path d="M16 13H8"/>
+                        <path d="M16 17H8"/>
+                        <path d="M10 9H8"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-text">Prioritize requires a Microsoft 365 Copilot license. If you don't see the option, the feature may still be rolling out to your tenant — check back in a few days.</div>
+                    </div>
+                </div>
+
+                <div class="troubleshooting">
+                    <button class="troubleshooting-toggle" aria-expanded="false" onclick="toggleTroubleshooting(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                        Having trouble? Expand for common issues
+                    </button>
+                    <div class="troubleshooting-content">
+                        <ul>
+                            <li><strong>No Copilot button visible:</strong> Ensure you're using the new Outlook for Windows or Outlook on the web — classic Outlook has a different interface.</li>
+                            <li><strong>"Prioritize" not in dropdown:</strong> The feature is rolling out gradually. If unavailable, try again in 24-48 hours.</li>
+                            <li><strong>Using classic Outlook:</strong> Navigate to <strong>View > View Settings > Copilot > Prioritize</strong> instead.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =========================================
+             STEP 2: Enable Prioritization
+             ========================================= -->
+        <article class="step-card" data-step="2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Enable Prioritization</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~3 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    Copilot opens the Prioritize settings panel. Toggle on <strong>Let Copilot prioritize my email</strong>. Check <strong>Show AI-generated summaries in the message list</strong> to replace the first line of messages with a brief summary. Optionally, check <strong>Apply low priority label</strong> to mark less important emails with a down arrow.
+                </p>
+
+                <div class="screenshot-container">
+                    <img src="step-2.jpeg" alt="Prioritize settings panel showing toggle and checkbox options">
+                    <p class="screenshot-caption">Enable prioritization and choose your display preferences</p>
+                </div>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-text">Enable "Apply low priority label" — it's off by default but incredibly useful for spotting emails you can batch-process later. You can always change this in <strong>Settings > Copilot > Prioritize</strong>.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =========================================
+             STEP 3: Write High Priority Instructions
+             ========================================= -->
+        <article class="step-card" data-step="3">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Write High Priority Instructions</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~10 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    In the <strong>Customize</strong> section, select the <strong>Higher priority</strong> tab. Type natural language instructions that describe emails you never want to miss, then click <strong>Add</strong>. Use phrases like "It's about...", "Mentions...", or "Contains..." — Copilot responds better to phrases than single keywords.
+                </p>
+
+                <div class="screenshot-container">
+                    <img src="step-3.jpeg" alt="High priority instructions panel with several example rules entered">
+                    <p class="screenshot-caption">Add instructions using natural language phrases, then click Add</p>
+                </div>
+
+                <p class="step-instruction" style="margin-top: var(--space-lg);">
+                    Here are high priority instruction examples — pick the ones that fit your role or adapt them to your situation:
+                </p>
+
+                <table class="instruction-table">
+                    <thead>
+                        <tr>
+                            <th>Instruction Example</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>It's from my direct manager</code></td>
+                            <td>Everyone <span class="role-badge generic">Generic</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Mentions a deadline in the next 48 hours</code></td>
+                            <td>Everyone <span class="role-badge generic">Generic</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Contains words like "urgent" or "ASAP"</code></td>
+                            <td>Everyone <span class="role-badge generic">Generic</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Requires my approval or sign-off</code></td>
+                            <td>Everyone <span class="role-badge generic">Generic</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>It's from a customer or client</code></td>
+                            <td>Sales / Account Mgmt <span class="role-badge sales">Sales</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Mentions deal closing or contract signing</code></td>
+                            <td>Sales <span class="role-badge sales">Sales</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Contains "RFP" or "proposal request"</code></td>
+                            <td>Sales <span class="role-badge sales">Sales</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Mentions project blockers or at-risk items</code></td>
+                            <td>Project Managers <span class="role-badge pm">PM</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>It's about a go-live or launch date</code></td>
+                            <td>Project Managers <span class="role-badge pm">PM</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Contains budget or resource allocation changes</code></td>
+                            <td>Project Managers <span class="role-badge pm">PM</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>It's from a board member or investor</code></td>
+                            <td>Executives <span class="role-badge exec">Exec</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Mentions quarterly results or earnings</code></td>
+                            <td>Executives <span class="role-badge exec">Exec</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Contains "escalation" or "executive sponsor"</code></td>
+                            <td>Executives <span class="role-badge exec">Exec</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="callout callout-warning">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Advanced</div>
+                        <div class="callout-text">You have a maximum of 15 total instructions shared between high and low priority. Be strategic — start with 4-6 high priority rules and leave room to refine.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =========================================
+             STEP 4: Create Low Priority Instructions
+             ========================================= -->
+        <article class="step-card" data-step="4">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Create Low Priority Instructions</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~8 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    Select the <strong>Lower priority</strong> tab. Add instructions for emails that are informational, automated, or can wait. This helps Copilot push noise to the bottom so you can batch-process it later. Click <strong>Save</strong> when you're done adding instructions.
+                </p>
+
+                <div class="screenshot-container">
+                    <img src="step-4.jpeg" alt="Low priority instructions panel with several example rules entered">
+                    <p class="screenshot-caption">Low priority rules help you defer non-urgent messages</p>
+                </div>
+
+                <p class="step-instruction" style="margin-top: var(--space-lg);">
+                    Here are low priority instruction examples for different roles:
+                </p>
+
+                <table class="instruction-table">
+                    <thead>
+                        <tr>
+                            <th>Instruction Example</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>It's a newsletter or marketing email</code></td>
+                            <td>Everyone <span class="role-badge generic">Generic</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Contains "unsubscribe" in the footer</code></td>
+                            <td>Everyone <span class="role-badge generic">Generic</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>It's an automated system notification</code></td>
+                            <td>Everyone <span class="role-badge generic">Generic</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>I'm CC'd but not in the To line</code></td>
+                            <td>Everyone <span class="role-badge generic">Generic</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>It's a meeting recording or transcript notification</code></td>
+                            <td>Everyone <span class="role-badge generic">Generic</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>It's a competitor news alert</code></td>
+                            <td>Sales <span class="role-badge sales">Sales</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Contains "industry report" or "market update"</code></td>
+                            <td>Sales <span class="role-badge sales">Sales</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>It's a project status update with no action items</code></td>
+                            <td>Project Managers <span class="role-badge pm">PM</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Contains "FYI" or "for your awareness"</code></td>
+                            <td>Project Managers <span class="role-badge pm">PM</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>It's a routine compliance or policy update</code></td>
+                            <td>Executives <span class="role-badge exec">Exec</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Contains "monthly digest" or "weekly summary"</code></td>
+                            <td>Executives <span class="role-badge exec">Exec</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-text">The "I'm CC'd but not in the To line" rule is a game-changer for managers who get included on many threads. It deprioritizes FYI emails without losing them.</div>
+                    </div>
+                </div>
+
+                <div class="callout callout-checkpoint">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <path d="M22 4L12 14.01l-3-3"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Checkpoint</div>
+                        <div class="callout-text">You should now have at least 2-3 high priority and 2-3 low priority instructions saved. Instructions take up to 15 minutes to apply to new incoming mail.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =========================================
+             STEP 5: Understand Priority Indicators
+             ========================================= -->
+        <article class="step-card" data-step="5">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Understand Priority Indicators</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~3 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    Return to your inbox and wait for new emails to arrive (Copilot only evaluates messages received after you enabled the feature). You'll notice visual indicators: an <strong>up arrow (↑)</strong> for high priority, and if enabled, a <strong>down arrow (↓)</strong> for low priority. The screenshot below shows low priority indicators on automated emails.
+                </p>
+
+                <div class="screenshot-container narrow">
+                    <img src="step-5.png" alt="Inbox showing emails with down arrow low priority indicators">
+                    <p class="screenshot-caption">Low priority down arrows appear next to newsletters and automated notifications</p>
+                </div>
+
+                <p class="step-instruction">
+                    When you select a prioritized message, the reading pane shows an expanded explanation at the top — a brief reasoning of why Copilot marked it as important. Click <strong>See Full Summary</strong> to view more details.
+                </p>
+
+                <div class="callout callout-note">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <path d="M14 2v6h6"/>
+                        <path d="M16 13H8"/>
+                        <path d="M16 17H8"/>
+                        <path d="M10 9H8"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-text">Copilot only evaluates emails delivered to your main Inbox. Messages routed to subfolders by rules, encrypted emails, and calendar/OOF notifications are not prioritized.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =========================================
+             STEP 6: Filter and Sort by Priority
+             ========================================= -->
+        <article class="step-card" data-step="6">
+            <div class="step-header">
+                <div class="step-number">6</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Filter and Sort by Priority</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~5 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    At the top of your message list, click the <strong>Filter</strong> icon (funnel shape). In the dropdown, select <strong>High Priority</strong> to show only critical emails. Other useful filters include <strong>Unread</strong>, <strong>Flagged</strong>, <strong>To me</strong>, and <strong>Mentions me</strong>.
+                </p>
+
+                <div class="screenshot-container narrow">
+                    <img src="step-6.png" alt="Filter dropdown showing High Priority and other filter options">
+                    <p class="screenshot-caption">Filter to show only high priority emails or combine with other filters</p>
+                </div>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-text">Start your morning by filtering to High priority only. Process those first, then remove the filter to batch through the rest. This simple workflow can cut your email triage time in half.</div>
+                    </div>
+                </div>
+
+                <div class="callout callout-checkpoint">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <path d="M22 4L12 14.01l-3-3"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Checkpoint</div>
+                        <div class="callout-text">You've now configured Copilot Prioritize on desktop! Try filtering to High priority and confirm you see only the messages that match your instructions.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =========================================
+             STEP 7: Set Up Priority View on Mobile
+             ========================================= -->
+        <article class="step-card" data-step="7">
+            <div class="step-header">
+                <div class="step-number">7</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Set Up Priority View on Mobile</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~8 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    Open the <strong>Outlook</strong> app on your iOS or Android device. Tap your <strong>profile icon</strong> in the top-left, then tap the <strong>gear icon</strong> to open Settings. Select your Exchange/Microsoft 365 account, then tap <strong>Copilot > Prioritize</strong>. Follow the prompts to enable Priority View.
+                </p>
+
+                <p class="step-instruction">
+                    Once enabled, return to your inbox and look for the <strong>sparkle icon (✨)</strong> at the top of your message list. Tap it to toggle between two focused views: <strong>High Priority</strong> (most important emails) and <strong>Needs Replies</strong> (messages Copilot predicts require a response).
+                </p>
+
+                <div class="callout callout-note">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <path d="M14 2v6h6"/>
+                        <path d="M16 13H8"/>
+                        <path d="M16 17H8"/>
+                        <path d="M10 9H8"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-text">Low priority indicators don't appear on mobile — only high priority up arrows are shown. Your desktop and mobile share the same prioritization instructions, so changes sync automatically.</div>
+                    </div>
+                </div>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-text">The "Needs Replies" view is perfect for commutes or quick mobile catch-ups — it surfaces follow-ups and direct questions you haven't responded to yet.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =========================================
+             STEP 8: Refine Your Instructions Over Time
+             ========================================= -->
+        <article class="step-card" data-step="8">
+            <div class="step-header">
+                <div class="step-number">8</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Refine Your Instructions Over Time</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~5 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    Over the next week, pay attention to Copilot's reasoning when you open prioritized messages. If something is marked high priority but shouldn't be (or vice versa), return to <strong>Settings > Copilot > Prioritize</strong> and adjust your instructions. This iterative tuning is how you get maximum value from the feature.
+                </p>
+
+                <div class="callout callout-warning">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Advanced</div>
+                        <div class="callout-text">New instructions take up to 15 minutes to apply. Disabling or removing instructions can take up to 24 hours to fully propagate. Plan accordingly if you're making significant changes.</div>
+                    </div>
+                </div>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-text">When refining, be specific. Instead of "emails about projects," try "emails mentioning Project Phoenix or the Q2 launch." Specificity helps Copilot make better decisions.</div>
+                    </div>
+                </div>
+
+                <div class="callout callout-checkpoint">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <path d="M22 4L12 14.01l-3-3"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Checkpoint</div>
+                        <div class="callout-text">Set a calendar reminder for one week from now to revisit your instructions. By then you'll have enough data to make meaningful refinements.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =========================================
+             COMPLETION SECTION
+             ========================================= -->
+        <section class="completion-section">
+            <div class="completion-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <path d="M22 4L12 14.01l-3-3"/>
+                </svg>
+            </div>
+            <h2 class="completion-title">Inbox Mastered!</h2>
+            <p class="completion-text">You've configured Copilot Prioritize across desktop and mobile, created custom high and low priority rules, and learned how to filter, sort, and refine over time. Your inbox now works for you — not the other way around.</p>
+            <!-- YOUR BRAND: Update these links -->
+            <div class="next-steps">
+                <a href="https://landtiser.com" class="next-step-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                    </svg>
+                    More guides at landtiser.com
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =============================================
+         FOOTER
+         ============================================= -->
+    <!-- YOUR BRAND: Footer -->
+    <footer class="lab-footer">
+        <div class="footer-brand">
+            <!-- Compass icon -->
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+            </svg>
+            <span>Chris Landtiser</span>
+        </div>
+        <p><a href="https://landtiser.com" class="footer-link">landtiser.com</a></p>
+    </footer>
+
+    <!-- =============================================
+         SCRIPTS
+         ============================================= -->
+    <script>
+        // Progress tracking based on scroll position
+        function updateProgress() {
+            const steps = document.querySelectorAll('.step-card');
+            const progressFill = document.getElementById('progressFill');
+            const progressSteps = document.getElementById('progressSteps');
+            
+            let completedSteps = 0;
+            const totalSteps = steps.length;
+            
+            steps.forEach((step, index) => {
+                const rect = step.getBoundingClientRect();
+                const stepMiddle = rect.top + rect.height / 2;
+                
+                if (stepMiddle < window.innerHeight / 2) {
+                    completedSteps = index + 1;
+                }
+            });
+            
+            const progress = (completedSteps / totalSteps) * 100;
+            progressFill.style.width = `${progress}%`;
+            progressSteps.textContent = `${completedSteps} of ${totalSteps}`;
+        }
+
+        // Troubleshooting toggle
+        function toggleTroubleshooting(button) {
+            const content = button.nextElementSibling;
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            
+            button.setAttribute('aria-expanded', !isExpanded);
+            content.classList.toggle('open');
+        }
+
+        // Initialize
+        window.addEventListener('scroll', updateProgress);
+        window.addEventListener('resize', updateProgress);
+        updateProgress();
+    </script>
+</body>
+</html>
