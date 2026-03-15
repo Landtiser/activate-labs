@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clean Messy Data with Copilot in Excel | Chris Landtiser</title>
+    <style>
+        :root {
+            /* Color Palette */
+            --voyager-blue: #003366;
+            --voyager-blue-light: #004080;
+            --voyager-teal: #008080;
+            --voyager-gold: #B8860B;
+            --voyager-silver: #C0C0C0;
+            --voyager-purple: #663399;
+            --neutral-dark: #333333;
+            --neutral-medium: #666666;
+            --neutral-light: #F5F5F5;
+            --white: #FFFFFF;
+            
+            /* Functional Tokens */
+            --text-primary: var(--neutral-dark);
+            --text-secondary: var(--neutral-medium);
+            --bg-page: var(--neutral-light);
+            --bg-card: var(--white);
+            --accent-primary: var(--voyager-blue);
+            --accent-secondary: var(--voyager-teal);
+            --highlight: var(--voyager-gold);
+            
+            /* Spacing Scale */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            --space-3xl: 4rem;
+            
+            /* Typography */
+            --font-family: 'Segoe UI', system-ui, sans-serif;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.75rem;
+            --font-size-4xl: 2.25rem;
+            
+            /* Effects */
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-page);
+        }
+
+        /* HEADER */
+        .lab-header {
+            background: linear-gradient(135deg, var(--voyager-blue) 0%, var(--voyager-blue-light) 100%);
+            color: var(--white);
+            padding: var(--space-3xl) var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lab-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0,128,128,0.15) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: 100px;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            margin-bottom: var(--space-lg);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header-badge svg { width: 16px; height: 16px; }
+
+        .lab-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            letter-spacing: -0.02em;
+        }
+
+        .lab-subtitle {
+            font-size: var(--font-size-lg);
+            opacity: 0.9;
+            max-width: 600px;
+            margin-bottom: var(--space-xl);
+        }
+
+        .lab-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-lg);
+            font-size: var(--font-size-sm);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            opacity: 0.85;
+        }
+
+        .meta-item svg { width: 18px; height: 18px; opacity: 0.7; }
+
+        /* PROGRESS TRACKER */
+        .progress-container {
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .progress-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-md) var(--space-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            background: none;
+            border: 1px solid var(--neutral-medium);
+            border-radius: var(--radius-sm);
+            padding: var(--space-xs) var(--space-md);
+            font-family: inherit;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .back-button:hover {
+            background: var(--neutral-light);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        .back-button svg { width: 14px; height: 14px; }
+
+        .progress-label {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--neutral-light);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--voyager-blue), var(--voyager-teal));
+            border-radius: 100px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-steps {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--accent-primary);
+            white-space: nowrap;
+        }
+
+        /* MAIN CONTENT */
+        .lab-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-2xl) var(--space-xl);
+        }
+
+        /* PHASE DIVIDERS */
+        .phase-divider {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            margin: var(--space-2xl) 0 var(--space-xl);
+        }
+
+        .phase-divider::before,
+        .phase-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--voyager-silver), transparent);
+        }
+
+        .phase-label {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--voyager-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            white-space: nowrap;
+        }
+
+        /* STEP CARDS */
+        .step-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-xl);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-lg);
+            padding: var(--space-xl);
+            border-bottom: 1px solid var(--neutral-light);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--voyager-blue), var(--voyager-blue-light));
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,51,102,0.3);
+        }
+
+        .step-title-group { flex: 1; }
+
+        .step-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .step-time {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .step-time svg { width: 14px; height: 14px; }
+
+        .step-body { padding: var(--space-xl); }
+
+        .step-instruction {
+            font-size: var(--font-size-lg);
+            line-height: 1.7;
+            margin-bottom: var(--space-lg);
+        }
+
+        .step-instruction code {
+            background: var(--neutral-light);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--voyager-blue);
+        }
+
+        .step-instruction strong {
+            color: var(--voyager-blue);
+            font-weight: 600;
+        }
+
+        /* PROMPT BOX */
+        .prompt-box {
+            background: #1e1e2e;
+            color: #cdd6f4;
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin: var(--space-lg) 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: var(--font-size-sm);
+            line-height: 1.7;
+            position: relative;
+            border: 1px solid rgba(0,128,128,0.3);
+        }
+
+        .prompt-label {
+            position: absolute;
+            top: 0;
+            left: var(--space-lg);
+            transform: translateY(-50%);
+            background: var(--voyager-teal);
+            color: var(--white);
+            font-family: var(--font-family);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 100px;
+            letter-spacing: 0.05em;
+        }
+
+        /* SCREENSHOT CONTAINER */
+        .screenshot-container {
+            background: var(--neutral-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin: var(--space-lg) 0;
+        }
+
+        .screenshot-container img {
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .screenshot-caption {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: var(--space-md);
+            font-style: italic;
+        }
+
+        /* CALLOUT BOXES */
+        .callout {
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin: var(--space-lg) 0;
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .callout-icon { width: 24px; height: 24px; flex-shrink: 0; }
+        .callout-content { flex: 1; }
+
+        .callout-title {
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+            font-size: var(--font-size-base);
+        }
+
+        .callout-text {
+            font-size: var(--font-size-sm);
+            line-height: 1.6;
+        }
+
+        .callout-tip {
+            background: linear-gradient(135deg, rgba(0,128,128,0.08), rgba(0,128,128,0.04));
+            border-left: 4px solid var(--voyager-teal);
+        }
+        .callout-tip .callout-icon { color: var(--voyager-teal); }
+        .callout-tip .callout-title { color: var(--voyager-teal); }
+
+        .callout-note {
+            background: linear-gradient(135deg, rgba(0,51,102,0.08), rgba(0,51,102,0.04));
+            border-left: 4px solid var(--voyager-blue);
+        }
+        .callout-note .callout-icon { color: var(--voyager-blue); }
+        .callout-note .callout-title { color: var(--voyager-blue); }
+
+        .callout-checkpoint {
+            background: linear-gradient(135deg, rgba(184,134,11,0.1), rgba(184,134,11,0.05));
+            border-left: 4px solid var(--voyager-gold);
+        }
+        .callout-checkpoint .callout-icon { color: var(--voyager-gold); }
+        .callout-checkpoint .callout-title { color: #8B6914; }
+
+        .callout-warning {
+            background: linear-gradient(135deg, rgba(102,51,153,0.08), rgba(102,51,153,0.04));
+            border-left: 4px solid var(--voyager-purple);
+        }
+        .callout-warning .callout-icon { color: var(--voyager-purple); }
+        .callout-warning .callout-title { color: var(--voyager-purple); }
+
+        /* TROUBLESHOOTING */
+        .troubleshooting { margin: var(--space-lg) 0; }
+
+        .troubleshooting-toggle {
+            background: var(--neutral-light);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: var(--space-md) var(--space-lg);
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            font-family: inherit;
+            font-size: var(--font-size-base);
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .troubleshooting-toggle:hover {
+            background: #e8e8e8;
+            color: var(--text-primary);
+        }
+
+        .troubleshooting-toggle svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .troubleshooting-toggle[aria-expanded="true"] svg {
+            transform: rotate(180deg);
+        }
+
+        .troubleshooting-content {
+            display: none;
+            padding: var(--space-lg);
+            background: var(--neutral-light);
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            margin-top: -8px;
+        }
+
+        .troubleshooting-content.open { display: block; }
+        .troubleshooting-content ul { margin-left: var(--space-lg); }
+
+        .troubleshooting-content li {
+            margin-bottom: var(--space-sm);
+            font-size: var(--font-size-sm);
+        }
+
+        /* COMPLETION SECTION */
+        .completion-section {
+            background: linear-gradient(135deg, var(--voyager-blue) 0%, var(--voyager-blue-light) 100%);
+            color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
+            text-align: center;
+            margin-top: var(--space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .completion-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(0,128,128,0.2) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .completion-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-lg);
+        }
+
+        .completion-icon svg { width: 32px; height: 32px; }
+
+        .completion-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+
+        .completion-text {
+            font-size: var(--font-size-lg);
+            opacity: 0.9;
+            max-width: 500px;
+            margin: 0 auto var(--space-xl);
+        }
+
+        .next-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: var(--space-md);
+        }
+
+        .next-step-link {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: var(--white);
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .next-step-link:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .next-step-link svg { width: 18px; height: 18px; }
+
+        /* FOOTER */
+        .lab-footer {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .footer-brand svg { width: 20px; height: 20px; color: var(--voyager-blue); }
+        .footer-brand span { font-weight: 600; color: var(--text-primary); }
+
+        .footer-link { color: var(--voyager-teal); text-decoration: none; }
+        .footer-link:hover { text-decoration: underline; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .lab-header { padding: var(--space-2xl) var(--space-lg); }
+            .lab-title { font-size: var(--font-size-2xl); }
+            .lab-subtitle { font-size: var(--font-size-base); }
+            .lab-meta { gap: var(--space-md); }
+            .progress-inner { padding: var(--space-sm) var(--space-lg); }
+            .progress-label { display: none; }
+            .back-button span { display: none; }
+            .lab-content { padding: var(--space-lg); }
+            .step-header { padding: var(--space-lg); }
+            .step-number { width: 40px; height: 40px; font-size: var(--font-size-lg); }
+            .step-body { padding: var(--space-lg); }
+        }
+
+        /* PRINT */
+        @media print {
+            .progress-container { display: none; }
+            .step-card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+            .troubleshooting-content { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =============================================
+         HEADER
+         ============================================= -->
+    <header class="lab-header">
+        <div class="header-content">
+            <!-- YOUR BRAND -->
+            <div class="header-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                </svg>
+                Chris Landtiser
+            </div>
+            <h1 class="lab-title">Clean Messy Data with Copilot in Excel</h1>
+            <p class="lab-subtitle">Turn a chaotic expense tracker into clean, analysis-ready data - using Microsoft 365 Copilot one prompt at a time.</p>
+            <div class="lab-meta">
+                <div class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    ~45 minutes
+                </div>
+                <div class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Intermediate
+                </div>
+                <div class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                        <path d="M8 21h8"/>
+                        <path d="M12 17v4"/>
+                    </svg>
+                    Excel for the web or desktop
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- =============================================
+         PROGRESS TRACKER
+         ============================================= -->
+    <div class="progress-container">
+        <div class="progress-inner">
+            <!-- YOUR BRAND -->
+            <a href="https://landtiser.com" class="back-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5"/>
+                    <path d="M12 19l-7-7 7-7"/>
+                </svg>
+                <span>Leave This Lab</span>
+            </a>
+            <span class="progress-label">Your progress</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-steps" id="progressSteps">0 of 8</span>
+        </div>
+    </div>
+
+    <!-- =============================================
+         MAIN CONTENT
+         ============================================= -->
+    <main class="lab-content">
+
+        <!-- =============================================
+             PHASE 1: ASSESS & STRUCTURE
+             ============================================= -->
+        <div class="phase-divider">
+            <span class="phase-label">Phase 1 &mdash; Assess &amp; Structure</span>
+        </div>
+
+        <!-- STEP 1: Open the File and Survey the Damage -->
+        <article class="step-card" data-step="1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Open the File and Survey the Damage</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~3 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    Open <code>Q1_Project_Expenses_MESSY.xlsx</code> in Excel. Before you touch anything, scroll top to bottom. You're looking for problems &mdash; and this file has plenty. Notice the merged title row across the top, the blank rows acting as section dividers between projects, dates in at least three different formats, dollar amounts that are sometimes numbers and sometimes text strings with dollar signs, abbreviations like "Consltng" and "Trvl" mixed in with proper category names, a vague "Col F" header, and a hand-typed total at the bottom that's more of a guess than a number.
+                </p>
+
+                <div class="screenshot-container">
+                    <img src="step1.png" alt="Bottom of the messy spreadsheet showing mixed date formats, category abbreviations like Consltng and Trvl, dollar-formatted strings mixed with plain numbers, duplicate rows near the bottom at rows 73 through 75, and a red italic total reading ~$28,000?? in row 77">
+                    <p class="screenshot-caption">The bottom of the file &mdash; mixed date formats, "Consltng" and "Trvl" abbreviations, the 3 duplicate rows hiding at rows 73&ndash;75, and that red italic "~$28,000??" total.</p>
+                </div>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-text">Resist the urge to start fixing things manually. The point of this lab is to let Copilot do the heavy lifting. Diagnosis before treatment.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- STEP 2: Remove Structural Clutter -->
+        <article class="step-card" data-step="2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Remove Structural Clutter</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~5 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    Click into any cell with data and open Copilot from the ribbon. Your first job is to clear out the structural junk that prevents Excel from treating this as a proper data table. The file has a merged title row at the top, a blank row after it, blank divider rows between project sections, a hand-typed <code>TOTAL (approx) ~$28,000??</code> at the bottom, and vague headers ("Col F" for the approver column, and a completely blank header on the notes column). Tell Copilot to identify the structural issues and make sure the data starts with a proper header row.
+                </p>
+
+                <div class="prompt-box">
+                    <span class="prompt-label">SAMPLE PROMPT</span>
+                    This spreadsheet has structural issues that prevent it from being a clean data table. Identify the issues and make sure the data starts with a proper header row.
+                </div>
+
+                <div class="screenshot-container">
+                    <img src="step2.png" alt="Excel spreadsheet after Copilot structural cleanup. Row 1 now shows clean headers: Date, Project, Category, Amount, Submitted By, Approved By, Notes. The Copilot panel on the right shows Reasoned in 2 steps and confirms the spreadsheet has been successfully cleaned with a summary of structural issues identified and fixed.">
+                    <p class="screenshot-caption">Copilot removes the merged title, blank divider rows, and the hand-typed total &mdash; and renames the vague headers in one pass.</p>
+                </div>
+
+                <div class="callout callout-checkpoint">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <path d="M22 4L12 14.01l-3-3"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Checkpoint</div>
+                        <div class="callout-text">Your header row should now read: <strong>Date</strong>, <strong>Project</strong>, <strong>Category</strong>, <strong>Amount</strong>, <strong>Submitted By</strong>, <strong>Approved By</strong>, <strong>Notes</strong>. No blank rows above, no blank rows between sections, no total row at the bottom. If that all checks out, the structure is clean.</div>
+                    </div>
+                </div>
+
+                <div class="troubleshooting">
+                    <button class="troubleshooting-toggle" aria-expanded="false" onclick="toggleTroubleshooting(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                        Having trouble? Expand for common issues
+                    </button>
+                    <div class="troubleshooting-content">
+                        <ul>
+                            <li><strong>Copilot doesn't detect the merged cell:</strong> Unmerge it manually first (<strong>Home &gt; Merge &amp; Center</strong> to toggle off), then re-prompt Copilot to find the remaining junk rows.</li>
+                            <li><strong>"I can't modify data outside a table":</strong> If your data isn't formatted as a table yet, select the full data range and press <code>Ctrl + T</code> to convert it, then try again.</li>
+                            <li><strong>Headers still say "Col F" or are blank:</strong> Copilot sometimes fixes these automatically when you ask for a proper header row. If not, manually rename column F to <code>Approver</code> and column G to <code>Notes</code>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =============================================
+             PHASE 2: CLEAN & STANDARDIZE
+             ============================================= -->
+        <div class="phase-divider">
+            <span class="phase-label">Phase 2 &mdash; Clean &amp; Standardize</span>
+        </div>
+
+        <!-- STEP 3: Standardize Dates -->
+        <article class="step-card" data-step="3">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Standardize Dates</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~5 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    The Date column is a mess. Three different formats are mixed throughout: short dates like <code>2/26/26</code>, written-out dates like <code>January 20, 2026</code>, and ISO dates like <code>2026-01-20</code>. Every one of these is stored as a text string, not an actual Excel date. Ask Copilot to convert them all to proper date values.
+                </p>
+
+                <div class="prompt-box">
+                    <span class="prompt-label">SAMPLE PROMPT</span>
+                    The Date column has three different text formats mixed together. Convert all of them to proper Excel date values and format the column as YYYY-MM-DD.
+                </div>
+
+                <div class="screenshot-container">
+                    <img src="step4.png" alt="Excel spreadsheet after date standardization. The Date column now shows consistent YYYY-MM-DD format throughout. The Copilot panel shows Reasoned in 2 steps and confirms all dates have been successfully converted. The Category and Amount columns remain uncleaned with mixed casing and dollar-formatted strings still visible.">
+                    <p class="screenshot-caption">All three date formats unified into proper Excel dates &mdash; notice the categories and amounts are still messy. One thing at a time.</p>
+                </div>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-text">ISO format (YYYY-MM-DD) sorts correctly as text <em>and</em> as dates, and eliminates the month/day confusion between US and international formats. It's the safest default for shared data.</div>
+                    </div>
+                </div>
+
+                <div class="troubleshooting">
+                    <button class="troubleshooting-toggle" aria-expanded="false" onclick="toggleTroubleshooting(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                        Having trouble? Expand for common issues
+                    </button>
+                    <div class="troubleshooting-content">
+                        <ul>
+                            <li><strong>Some dates didn't convert:</strong> The short format <code>1/20/26</code> can be ambiguous. If Copilot misinterprets any, specify in your prompt that all dates are in 2026 and the format is M/D/YY (US convention).</li>
+                            <li><strong>Dates show as numbers (like 46041):</strong> The conversion worked &mdash; those are Excel serial dates. Right-click the column, choose <strong>Format Cells</strong>, and apply a date format.</li>
+                            <li><strong>Copilot created a helper column instead of editing in place:</strong> That's fine. Copy the helper column values, paste them over the original Date column using <strong>Paste Special &gt; Values</strong>, then delete the helper column.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- STEP 4: Normalize Categories -->
+        <article class="step-card" data-step="4">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Normalize Categories</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~5 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    The Category column has 19 different values for what should be 5 categories. You'll find full words in mixed case (<code>Travel</code>, <code>TRAVEL</code>, <code>travel</code>), abbreviations (<code>Trvl</code>, <code>Sftwre</code>, <code>Consltng</code>, <code>Ofc Supplies</code>), and everything in between. Tell Copilot exactly which 5 values you want and let it figure out the mappings.
+                </p>
+
+                <div class="prompt-box">
+                    <span class="prompt-label">SAMPLE PROMPT</span>
+                    The Category column has inconsistent naming. Standardize all values to exactly these 5 categories: "Consulting", "Office Supplies", "Software", "Training", "Travel".
+                </div>
+
+                <div class="screenshot-container">
+                    <img src="step5.png" alt="Excel spreadsheet after category normalization. The Category column now shows clean, consistent values like Travel, Consulting, Software, Office Supplies, and Training. The Copilot panel shows Reasoned in 1 step and confirms the Category column has been successfully standardized with a summary. The Amount column still shows mixed formats with some dollar-sign strings visible.">
+                    <p class="screenshot-caption">19 variations collapsed into 5 clean categories &mdash; Copilot mapped the abbreviations automatically.</p>
+                </div>
+
+                <div class="callout callout-checkpoint">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <path d="M22 4L12 14.01l-3-3"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Checkpoint</div>
+                        <div class="callout-text">Filter the Category column. You should see exactly 5 values: Consulting, Office Supplies, Software, Training, Travel. If you see anything else &mdash; an abbreviation that slipped through, a lingering typo &mdash; re-prompt with the specific value that needs mapping.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- STEP 5: Clean the Amount Column -->
+        <article class="step-card" data-step="5">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Clean the Amount Column</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~5 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    The Amount column is a mix of three different data types. Some values are actual numbers (integers like <code>1550</code> or floats like <code>612.5</code>). Others are plain text strings like <code>"67.25"</code>. And about a third are dollar-formatted strings like <code>"$3,200.00"</code>. Until they're all real numbers, no formula &mdash; and no Copilot summary &mdash; will give you an accurate total. This one doesn't need a complicated prompt.
+                </p>
+
+                <div class="prompt-box">
+                    <span class="prompt-label">SAMPLE PROMPT</span>
+                    Clean up the Amount column to simple numeric values.
+                </div>
+
+                <div class="screenshot-container">
+                    <img src="step6.png" alt="Excel spreadsheet after amount cleanup. The Amount column now shows right-aligned numeric values like 1,550.00, 1,200.00, 67.25, 612.50 throughout. The Copilot panel shows a green checkmark with Amount Column Cleanup Complete and begins listing Issues Found and Fixed.">
+                    <p class="screenshot-caption">All amounts converted to proper numbers &mdash; right-aligned, ready for math.</p>
+                </div>
+
+                <div class="callout callout-note">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <path d="M14 2v6h6"/>
+                        <path d="M16 13H8"/>
+                        <path d="M16 17H8"/>
+                        <path d="M10 9H8"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-text">A quick way to verify: select the full Amount column and check the status bar at the bottom of Excel. If it shows a <strong>Sum</strong>, all values are numeric. If it only shows a <strong>Count</strong>, some text values are still hiding in the column.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- STEP 6: Find and Remove Duplicates -->
+        <article class="step-card" data-step="6">
+            <div class="step-header">
+                <div class="step-number">6</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Find and Remove Duplicates</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~5 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    This file has 3 duplicate rows buried near the bottom &mdash; the kind you'd never catch on a visual scan. They're exact copies of rows that appear earlier in the data, likely from a copy-paste accident. Ask Copilot to find them.
+                </p>
+
+                <div class="prompt-box">
+                    <span class="prompt-label">SAMPLE PROMPT</span>
+                    Check this data for duplicate rows. Compare all columns except Notes to find exact matches. Show me which rows are duplicates and which rows they duplicate.
+                </div>
+
+                <div class="screenshot-container">
+                    <img src="step7.png" alt="Excel spreadsheet with the Copilot panel showing a Duplicate Analysis with a green checkmark. Copilot confirms it found duplicate rows in the data and will display the information. The spreadsheet in the background shows clean headers and standardized values across all columns.">
+                    <p class="screenshot-caption">Three duplicates identified &mdash; each an exact match of an earlier row.</p>
+                </div>
+
+                <div class="callout callout-warning">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Advanced</div>
+                        <div class="callout-text">In real-world data, duplicates aren't always exact. Two rows with the same date, project, and amount but different submitters could be a legitimate split expense or a copy-paste error. Always review flagged duplicates before deleting &mdash; Copilot finds them, but you make the call.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =============================================
+             PHASE 3: VALIDATE & SUMMARIZE
+             ============================================= -->
+        <div class="phase-divider">
+            <span class="phase-label">Phase 3 &mdash; Validate &amp; Summarize</span>
+        </div>
+
+        <!-- STEP 7: Build a Summary -->
+        <article class="step-card" data-step="7">
+            <div class="step-header">
+                <div class="step-number">7</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">Build a Summary</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~5 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    Your data is clean. Now make it useful. Ask Copilot to create a summary breakdown by project and category so you can see where the money actually went. This is also your chance to see how far off that hand-typed <code>~$28,000??</code> estimate really was.
+                </p>
+
+                <div class="prompt-box">
+                    <span class="prompt-label">SAMPLE PROMPT</span>
+                    Create a summary table showing total spending by Project and Category. Include row totals for each project and a grand total. Also tell me: what is the actual total, and how far off was the original "~$28,000" estimate?
+                </div>
+
+                <div class="screenshot-container">
+                    <img src="step8.png" alt="Copilot-generated summary table in columns I through O showing total spending by project and category. Atlas Redesign: $9,710. Beacon Migration: $8,095.74. Catalyst Launch: $9,882.98. Delta Compliance: $15,935.24. Grand Total row highlighted in dark blue: $43,623.96. Below the table, an Estimate vs. Actual Analysis shows Original Estimate ~$28,000, Actual Total $43,623.96, Difference $15,623.96, Variance 55.80%. The Copilot panel on the right shows the matching prompt.">
+                    <p class="screenshot-caption">The real numbers &mdash; $43,623.96 total, a 55.80% variance from the original "~$28,000" guess.</p>
+                </div>
+
+                <div class="callout callout-checkpoint">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <path d="M22 4L12 14.01l-3-3"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Checkpoint</div>
+                        <div class="callout-text">You should have a clean dataset with 66 rows (after removing the 3 duplicates from the original 69), 7 properly labeled columns, consistent dates, 5 normalized categories, all-numeric amounts, and a summary that tells you exactly what was spent where.</div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =============================================
+             THE FULL SEND
+             ============================================= -->
+        <div class="phase-divider">
+            <span class="phase-label">The Full Send</span>
+        </div>
+
+        <!-- STEP 8: One-Prompt Clean -->
+        <article class="step-card" data-step="8">
+            <div class="step-header">
+                <div class="step-number">8</div>
+                <div class="step-title-group">
+                    <h2 class="step-title">One-Prompt Clean</h2>
+                    <div class="step-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        ~10 minutes
+                    </div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p class="step-instruction">
+                    Open <code>Q1_Project_Expenses_FULLSEND.xlsx</code> &mdash; a fresh, untouched copy of the original messy file. This time, write one comprehensive prompt that handles everything you just did across Steps 2&ndash;7 in a single shot. You've already learned what the problems are and how Copilot solves each one. Now combine that knowledge into one clear instruction.
+                </p>
+
+                <div class="prompt-box">
+                    <span class="prompt-label">SAMPLE PROMPT</span>
+                    Clean this expense spreadsheet completely:<br><br>
+                    1. Remove the merged title row, the blank row after it, all blank divider rows between sections, and the hand-typed TOTAL row at the bottom. Make sure the data starts with a proper header row.<br>
+                    2. Standardize all dates to YYYY-MM-DD format. The column has three text formats mixed together: M/D/YY, Month Day Year, and YYYY-MM-DD. Convert all to real Excel dates.<br>
+                    3. Normalize categories to exactly 5 values: Consulting, Office Supplies, Software, Training, Travel.<br>
+                    4. Convert all amounts to proper numbers by stripping dollar signs and commas from text strings.<br>
+                    5. Find and remove exact duplicate rows (comparing all columns except Notes).<br>
+                    6. Create a summary table showing total spending by Project and Category with a grand total.
+                </div>
+
+                <div class="callout callout-tip">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 16v-4"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                    <div class="callout-content">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-text">The step-by-step approach from Phases 1 and 2 isn't wasted effort &mdash; it's how you learn what to ask for. The full-send prompt works because you already know the problems and their solutions. Specificity comes from experience.</div>
+                    </div>
+                </div>
+
+                <div class="troubleshooting">
+                    <button class="troubleshooting-toggle" aria-expanded="false" onclick="toggleTroubleshooting(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                        Having trouble? Expand for common issues
+                    </button>
+                    <div class="troubleshooting-content">
+                        <ul>
+                            <li><strong>Copilot only completes part of the list:</strong> Break it into two prompts &mdash; structural cleanup first (items 1-2), then data cleaning (items 3-6). Some tasks have dependencies that work better in sequence.</li>
+                            <li><strong>Results differ from your step-by-step version:</strong> Compare the two side by side. Minor differences in rounding or date formatting are expected. If a category mapping was missed, add a follow-up prompt for the specific value.</li>
+                            <li><strong>Copilot times out or throws an error:</strong> Long prompts occasionally hit processing limits. Try removing the summary request (item 6) and running it as a separate follow-up prompt after the cleanup completes.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- =============================================
+             COMPLETION
+             ============================================= -->
+        <section class="completion-section">
+            <div class="completion-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <path d="M22 4L12 14.01l-3-3"/>
+                </svg>
+            </div>
+            <h2 class="completion-title">Lab Complete!</h2>
+            <p class="completion-text">You turned a messy expense tracker into clean, analysis-ready data - and discovered the real total was over $15,000 higher than the guess at the bottom. Then you did it again in one prompt. That's the Copilot workflow: learn the problems step by step, then automate the solution.</p>
+            <!-- YOUR BRAND -->
+            <div class="next-steps">
+                <a href="https://landtiser.com" class="next-step-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                    </svg>
+                    More guides at landtiser.com
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =============================================
+         FOOTER
+         ============================================= -->
+    <!-- YOUR BRAND -->
+    <footer class="lab-footer">
+        <div class="footer-brand">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+            </svg>
+            <span>Chris Landtiser</span>
+        </div>
+        <p><a href="https://landtiser.com" class="footer-link">landtiser.com</a></p>
+    </footer>
+
+    <!-- =============================================
+         SCRIPTS
+         ============================================= -->
+    <script>
+        function updateProgress() {
+            const steps = document.querySelectorAll('.step-card');
+            const progressFill = document.getElementById('progressFill');
+            const progressSteps = document.getElementById('progressSteps');
+            
+            let completedSteps = 0;
+            const totalSteps = steps.length;
+            
+            steps.forEach((step, index) => {
+                const rect = step.getBoundingClientRect();
+                const stepMiddle = rect.top + rect.height / 2;
+                if (stepMiddle < window.innerHeight / 2) {
+                    completedSteps = index + 1;
+                }
+            });
+            
+            const progress = (completedSteps / totalSteps) * 100;
+            progressFill.style.width = `${progress}%`;
+            progressSteps.textContent = `${completedSteps} of ${totalSteps}`;
+        }
+
+        function toggleTroubleshooting(button) {
+            const content = button.nextElementSibling;
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', !isExpanded);
+            content.classList.toggle('open');
+        }
+
+        window.addEventListener('scroll', updateProgress);
+        window.addEventListener('resize', updateProgress);
+        updateProgress();
+    </script>
+</body>
+</html>
